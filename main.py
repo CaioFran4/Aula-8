@@ -82,39 +82,60 @@ def analisar_estoque():
 
 def rev_produto():
     print("----> REMOVENDO LOTE|PRODUTO <----")
-    print("1 - Remover por ID")
-    print("2 - Remover por Nome")
+    print("1 - Remover Lote Inteiro (Deletar Produto)")
+    print("2 - Reduzir Quantidade do Estoque (Por ID ou Nome)")
     opcao = input("Escolha uma opção: ").strip()
     
-    produto_remover = None
-
-
     if opcao == "1":
-        id_escolhido = int(input("Digite o ID do produto: "))
+        id_escolhido = int(input("Digite o ID do Lote que deseja remover: "))
+        produto_remover = None
+        
         for produto in produtos:
             if produto['id'] == id_escolhido:
                 produto_remover = produto
                 break
-                
-    elif opcao == "2":
-        nome_escolhido = input("Digite o Nome do produto: ").strip().capitalize()
-        for produto in produtos:
-            if produto['nome'] == nome_escolhido:
-                produto_remover = produto
-                break
-
-
-    if produto_remover:
-        produtos.remove(produto_remover)
-        print(f"\n✅ Produto '{produto_remover['nome']}' removido com sucesso!")
-
-        for indice, p in enumerate(produtos):
-            p['id'] = indice + 1
+        
+        if produto_remover:
+            produtos.remove(produto_remover)
+            print(f"\n✅ Lote do produto '{produto_remover['nome']}' removido com sucesso!")
+            for indice, p in enumerate(produtos):
+                p['id'] = indice + 1
+            salvar_produtos(produtos)
+            print("IDs reorganizados conforme a remoção\n")
+        else:
+            print("❌ Lote não encontrado.\n")
             
-        salvar_produtos(produtos)
-        print("IDs reorganizados conforme a remoção\n")
-    else:
-        print("❌ Produto não encontrado.\n")
+    elif opcao == "2":
+
+        busca = input("Digite o ID ou o Nome do produto para reduzir o estoque: ").strip()
+        produto_encontrado = None
+        
+
+        for produto in produtos:
+
+            if busca.isdigit():
+                if produto['id'] == int(busca):
+                    produto_encontrado = produto
+                    break
+            else:
+                if produto['nome'].lower() == busca.lower():
+                    produto_encontrado = produto
+                    break
+        
+
+        if produto_encontrado:
+            print(f"Produto encontrado: {produto_encontrado['nome']} | Estoque atual: {produto_encontrado['estoque']}")
+            qtd_remover = float(input("Quantas unidades deseja remover do estoque?: "))
+            
+            if qtd_remover <= produto_encontrado['estoque']:
+                produto_encontrado['estoque'] -= qtd_remover
+                salvar_produtos(produtos)
+                print(f"✅ Sucesso! Foram removidas {qtd_remover} unidades. Estoque atualizado para: {produto_encontrado['estoque']}\n")
+            else:
+                print("❌ Erro: A quantidade informada é maior do que o estoque disponível.\n")
+        else:
+            print("❌ Produto não encontrado.\n")
+
 
 def esvaziar_estoque():
     print("----> ESVAZIANDO TODO O ESTOQUE <----")
