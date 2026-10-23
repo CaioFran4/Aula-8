@@ -82,5 +82,12 @@
         "categoria": "hardware",
         "preco": 800.0,
         "estoque": 80.0
+    },
+    {
+        "id": 13,
+        "nome": "Cadeira gamer azul",
+        "categoria": "Periferico",
+        "preco": 325.9,
+        "estoque": 12.0
     }
 ]

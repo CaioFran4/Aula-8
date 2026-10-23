@@ -65,20 +65,78 @@ def mostrar_preco():
 
 def analisar_estoque():
     print("----> ANALISANDO ESTOQUE <----")
-    p_estoque = input("Qual situação do estoque você deseja ver?: ") .capitalize()
+    p_estoque = input("Qual situação do estoque você deseja ver?: ").strip() .capitalize()
 
     limite_baixo = 20
 
     for produto in produtos:
         status = "Baixo" if produto['estoque'] <= limite_baixo else "Alto"
 
-        if p_estoque == "Baixo" and produto['estoque'] <= limite_baixo:
+        if p_estoque == "Baixo" and produto['estoque'] <= limite_baixo or p_estoque == "Baixa" and produto['estoque'] <= limite_baixo:
             print(f"ID: {produto['id']} | Nome: {produto['nome']} | Categoria: {produto['categoria']}  | Preço: {produto['preco']} | Estoque: {produto['estoque']}")
             salvar_produtos(produtos)
 
-        elif p_estoque == "Alto" and produto['estoque'] >= limite_baixo:
+        elif p_estoque == "Alto" and produto['estoque'] >= limite_baixo or p_estoque == "Alta" and produto['estoque'] >= limite_baixo:
             print(f"ID: {produto['id']} | Nome: {produto['nome']} | Categoria: {produto['categoria']}  | Preço: {produto['preco']} | Estoque: {produto['estoque']}")   
-            salvar_produtos(produtos)      
+            salvar_produtos(produtos)
+
+def rev_produto():
+    print("----> REMOVENDO LOTE|PRODUTO <----")
+    print("1 - Remover por ID")
+    print("2 - Remover por Nome")
+    opcao = input("Escolha uma opção: ").strip()
+    
+    produto_remover = None
+
+
+    if opcao == "1":
+        id_escolhido = int(input("Digite o ID do produto: "))
+        for produto in produtos:
+            if produto['id'] == id_escolhido:
+                produto_remover = produto
+                break
+                
+    elif opcao == "2":
+        nome_escolhido = input("Digite o Nome do produto: ").strip().capitalize()
+        for produto in produtos:
+            if produto['nome'] == nome_escolhido:
+                produto_remover = produto
+                break
+
+
+    if produto_remover:
+        produtos.remove(produto_remover)
+        print(f"\n✅ Produto '{produto_remover['nome']}' removido com sucesso!")
+
+        for indice, p in enumerate(produtos):
+            p['id'] = indice + 1
+            
+        salvar_produtos(produtos)
+        print("IDs reorganizados conforme a remoção\n")
+    else:
+        print("❌ Produto não encontrado.\n")
+
+def esvaziar_estoque():
+    print("----> ESVAZIANDO TODO O ESTOQUE <----")
+    senha_correta = "12345678910" 
+    
+
+    r_estoque = input("Gostaria realmente de esvaziar TODO o estoque? (digite 'sim' para continuar): ").strip().lower()
+    
+    if r_estoque != "sim":
+        print("❌ Operação cancelada. Confirmação incorreta.\n")
+        return
+
+
+    confir = input("Digite a senha de administrador para esvaziar os lotes: ").strip()
+    
+    if confir == senha_correta:
+        produtos.clear()    
+        salvar_produtos(produtos)
+        print("✅ Sucesso. O estoque foi completamente esvaziado e o sistema foi atualizado.\n")
+    else:
+        print("❌ Senha incorreta. Operação cancelada por segurança.\n")
+
                
 
 
@@ -86,17 +144,16 @@ def analisar_estoque():
 
 
 
-    
-
-
 while True:
 
     print("======> Menu <======")
     print("----- 1 - Mostrar Estoque/Produtos-----")
     print("----- 2 - Cadastrar Produto-----")
-    print("----- 3 - Mostrar por Categoria-----")
-    print("----- 4 - Mostrar por Preço-----")
-    print("----- 5 - Procurar por Estoque(Alto ou Baixo Estoque)-----")
+    print("----- 3 - Remover Lote | Produto-----")
+    print("----- 4 - Mostrar por Categoria-----")
+    print("----- 5 - Mostrar por Preço-----")
+    print("----- 6 - Procurar por Estoque(Alto ou Baixo Estoque)-----")
+    print("----- 7 - Esvaziar Estoque(Somente com senha)-----")
     print("----- 0 - Encerrar Sistema-----")
 
     opcao = input("Escolha uma das opções a seguir: ")
@@ -106,15 +163,21 @@ while True:
 
     elif opcao == "2":
         cadastrar_produto()
-
+    
     elif opcao == "3":
-        mostrar_categoria()
+        rev_produto()
 
     elif opcao == "4":
-        mostrar_preco()
+        mostrar_categoria()
 
     elif opcao == "5":
+        mostrar_preco()
+
+    elif opcao == "6":
         analisar_estoque()
+
+    elif opcao == "7":
+        esvaziar_estoque()
     
     elif opcao == "0":
         print("----> Encerrando Sistema <----")
